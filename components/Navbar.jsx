@@ -67,7 +67,7 @@ export const NavbarX = () => {
         } bg-opacity-30 backdrop-blur-xl backdrop-filter`}
       >
         <nav className="w-full h-full flex flex-col justify-center items-center">
-          <div className="container flex justify-between xl:px-36">
+          <div className="container flex justify-between">
             <div>
               <Link href="/" className="flex items-center py-2">
                 <h2 className="cursor-pointer titillium-web font-bold py-2 text-3xl">
