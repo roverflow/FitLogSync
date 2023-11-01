@@ -11,7 +11,13 @@ const AppLayout = ({ children }) => {
   return (
     <>
       <NavbarX />
-      {loading ? null : !user ? <LoginComponent /> : <>{children}</>}
+      {loading ? null : !user ? (
+        <>
+          <LoginComponent />
+        </>
+      ) : (
+        <>{children}</>
+      )}
     </>
   );
 };
