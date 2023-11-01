@@ -11,7 +11,22 @@ import {
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
 
-const Navbar = () => {
+export const NavData = [
+  {
+    title: "Home",
+    link: "/",
+  },
+  {
+    title: "Your programs",
+    link: "/your-programs",
+  },
+  {
+    title: "Create",
+    link: "/create-program",
+  },
+];
+
+export const NavbarX = () => {
   const { logOut } = UserAuth();
   const { user } = checkAuth();
 
@@ -23,56 +38,52 @@ const Navbar = () => {
     }
   };
 
-  return (
-    <div className="w-full shadow-sm border-b-[2px]">
-      <header className="bg-white flex justify-between items-center w-[92%] mx-auto container">
-        <Link href={`/`}>
-          <h2 className="cursor-pointer titillium-web font-bold py-4 text-3xl">
-            <span className="text-blue-500">f</span>it
-            <span className="text-blue-500">l</span>og
-          </h2>
-        </Link>
-        {/* <div className="nav-links duration-500 md:static absolute bg-white md:min-h-fit min-h-[60vh] left-0 top-[-100%] md:w-auto  w-full flex items-center px-5">
-          <ul className="flex md:flex-row flex-col md:items-center md:gap-[4vw] gap-8">
-            <li>
-              <a className="hover:text-gray-500" href="#">
-                Products
-              </a>
-            </li>
-            <li>
-              <a className="hover:text-gray-500" href="#">
-                Solution
-              </a>
-            </li>
-            <li>
-              <a className="hover:text-gray-500" href="#">
-                Resource
-              </a>
-            </li>
-            <li>
-              <a className="hover:text-gray-500" href="#">
-                Developers
-              </a>
-            </li>
-            <li>
-              <a className="hover:text-gray-500" href="#">
-                Pricing
-              </a>
-            </li>
-          </ul>
-        </div> */}
+  const [showSubMenu, setShowSubMenu] = useState("");
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
 
-        <div className="flex items-center gap-2">
-          {!user ? null : (
-            <DropdownMenu>
-              <DropdownMenuTrigger>
-                <button
-                  type="button"
-                  aria-haspopup="dialog"
-                  aria-expanded="false"
-                  aria-controls="radix-:r0:"
-                  data-state="closed"
-                >
+  const handleSubmenu = (title) => {
+    if (showSubMenu === title) {
+      setShowSubMenu("");
+    } else {
+      setShowSubMenu(title);
+    }
+  };
+
+  return (
+    <>
+      <div
+        className={`fixed z-50 w-full bg-white shadow-sm border-b-[2px] ${
+          showMobileMenu ? "h-[100vh]" : "h-[10vh]"
+        } bg-opacity-30 backdrop-blur-xl backdrop-filter`}
+      >
+        <nav className="w-full h-full flex flex-col justify-center items-center">
+          <div className="container flex justify-between xl:px-36">
+            <div>
+              <Link href="/" className="flex items-center py-3">
+                <h2 className="cursor-pointer titillium-web font-bold py-3 text-3xl">
+                  <span className="text-blue-500">f</span>it
+                  <span className="text-blue-500">l</span>og
+                </h2>
+              </Link>
+            </div>
+            <div className="hidden items-center gap-6 md:gap-12 lg:flex">
+              {NavData.map((nav, i) => {
+                return (
+                  <Link
+                    href={nav.link}
+                    className="relative group/menu py-2 text-blue-500 font-semibold hover:text-blue-700 hover:border-b-2"
+                    key={i}
+                  >
+                    <div className="flex cursor-pointer items-center justify-between gap-1">
+                      <span className="text-base">{nav.title}</span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+            <div className="hidden items-center justify-between gap-3 lg:flex">
+              <DropdownMenu>
+                <DropdownMenuTrigger>
                   <button className="inline-flex hover:bg-gray-100 items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2">
                     <svg
                       className=" h-4 w-4"
@@ -90,28 +101,60 @@ const Navbar = () => {
                       <circle cx="12" cy="12" r="3"></circle>
                     </svg>
                   </button>
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuLabel>My Account</DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onSelect={handleSignOut}
-                  className="cursor-pointer"
-                >
-                  Sign Out
-                </DropdownMenuItem>
-                <Link href={`/profile`}>
-                  <DropdownMenuItem className="cursor-pointer">
-                    Profile
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+
+                  <Link href={`/profile`}>
+                    <DropdownMenuItem className="cursor-pointer">
+                      Profile
+                    </DropdownMenuItem>
+                  </Link>
+                  <DropdownMenuItem
+                    onSelect={handleSignOut}
+                    className="cursor-pointer"
+                  >
+                    Sign Out
                   </DropdownMenuItem>
-                </Link>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          )}
-        </div>
-      </header>
-    </div>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+            <div className="flex items-center lg:hidden">
+              <button
+                className="rounded-full bg-blue-500 px-4 py-2 text-white font-bold"
+                onClick={() => setShowMobileMenu((val) => !val)}
+              >
+                {showMobileMenu ? "Close" : "Menu"}
+              </button>
+            </div>
+          </div>
+          <div
+            className={`mobile-menu z-30 ${
+              showMobileMenu ? "" : "hidden"
+            } h-screen w-full p-6`}
+          >
+            {NavData.map((nav, i) => {
+              return (
+                <div className="mb-3 border-b border-gray-600 py-2" key={i}>
+                  <>
+                    <div className="flex cursor-pointer items-center justify-between gap-1 font-bold">
+                      <Link
+                        href={nav.link}
+                        className="text-base"
+                        onClick={() => setShowMobileMenu((val) => !val)}
+                      >
+                        {nav.title}
+                      </Link>
+                    </div>
+                  </>
+                </div>
+              );
+            })}
+          </div>
+        </nav>
+      </div>
+    </>
   );
 };
 

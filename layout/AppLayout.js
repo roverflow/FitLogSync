@@ -1,6 +1,6 @@
 "use client";
 
-import Navbar from "@/components/Navbar";
+import { NavbarX } from "@/components/Navbar";
 import LoginComponent from "@/components/LoginComponent";
 
 import checkAuth from "@/hooks/checkAuth";
@@ -10,7 +10,7 @@ const AppLayout = ({ children }) => {
 
   return (
     <>
-      <Navbar />
+      <NavbarX />
       {loading ? null : !user ? <LoginComponent /> : <>{children}</>}
     </>
   );

@@ -7,7 +7,7 @@ const checkAuth = () => {
   const [loading, setLoading] = useState(true);
   useEffect(() => {
     const checkAuthentication = async () => {
-      await new Promise((resolve) => setTimeout(resolve, 350));
+      await new Promise((resolve) => setTimeout(resolve, 400));
       setLoading(false);
     };
     checkAuthentication();
