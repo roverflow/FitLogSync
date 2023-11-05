@@ -6,16 +6,33 @@ import {
   onAuthStateChanged,
   GoogleAuthProvider,
 } from "firebase/auth";
-import { auth } from "@/firebase/firebaseSetup";
+import { auth, db } from "@/firebase/firebaseSetup";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 
 const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  const googleSignIn = () => {
-    const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider);
+  const googleSignIn = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const userCredential = await signInWithPopup(auth, provider);
+      const user = userCredential.user;
+
+      const userRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(userRef);
+
+      if (!docSnap.exists()) {
+        await setDoc(userRef, {
+          email: user.email,
+          joinDate: new Date().toISOString(),
+          // ... Add other default values for the user here if you need
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const logOut = () => {
