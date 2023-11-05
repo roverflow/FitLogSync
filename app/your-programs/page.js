@@ -43,6 +43,8 @@ const YourProgram = () => {
       const userDocRef = doc(db, "users", user.uid);
       await updateDoc(userDocRef, {
         currentWorkoutTemplate: id,
+        currentWorkoutTemplateIndex: 0,
+        lastLoggedWorkout: "",
       });
       toast({
         title: "Done!",

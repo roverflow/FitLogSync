@@ -137,6 +137,8 @@ const CreateProgram = observer(() => {
       if (!userDocSnap.data().currentWorkoutTemplate) {
         await updateDoc(userDocRef, {
           currentWorkoutTemplate: programRef.id,
+          currentWorkoutTemplateIndex: 0,
+          lastLoggedWorkout: "",
         });
       }
       toast({

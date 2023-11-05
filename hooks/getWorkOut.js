@@ -16,6 +16,7 @@ const getWorkOut = (user) => {
   const [dataExists, setDataExists] = useState(false);
   const [allTemplates, setAllTemplates] = useState([]);
   const [currentWorkoutTemplate, setCurrentWorkoutTemplate] = useState(null);
+  const [thisWorkOut, setThisWorkOut] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -32,9 +33,6 @@ const getWorkOut = (user) => {
           setError("No user found");
           setLoading(false);
           return;
-        }
-        if (userDocSnap.data().currentWorkoutTemplate) {
-          setCurrentWorkoutTemplate(userDocSnap.data().currentWorkoutTemplate);
         }
         const allUserProgramsSnapshot = await getDocs(
           query(
@@ -53,6 +51,15 @@ const getWorkOut = (user) => {
         const allUserPrograms = allUserProgramsSnapshot.docs.map((docx) => {
           return { data: docx.data(), id: docx.id };
         });
+        if (userDocSnap.data().currentWorkoutTemplate) {
+          setCurrentWorkoutTemplate(userDocSnap.data().currentWorkoutTemplate);
+          const thisworkOutTemplate = allUserPrograms.find(
+            (program) =>
+              program.id === userDocSnap.data().currentWorkoutTemplate
+          );
+          setThisWorkOut(thisworkOutTemplate);
+        }
+
         setAllTemplates(allUserPrograms);
         setLoading(false);
       } catch (error) {
@@ -70,6 +77,7 @@ const getWorkOut = (user) => {
     error,
     allTemplates,
     currentWorkoutTemplate,
+    thisWorkOut,
   };
 };
 
