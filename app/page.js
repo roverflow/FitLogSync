@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import {
   Accordion,
   AccordionContent,
@@ -14,7 +15,8 @@ import Link from "next/link";
 
 export default function Home() {
   const { user } = checkAuth();
-  const { thisWorkOut, loading, currentWorkoutTemplate } = getWorkOut(user);
+  const { thisWorkOut, loading, currentWorkoutTemplate, userDoc } =
+    getWorkOut(user);
   const [prevWorkout, setPrevWorkout] = useState(null);
   if (loading) return <Loading />;
   if (thisWorkOut === null || currentWorkoutTemplate === null) {
@@ -60,6 +62,50 @@ export default function Home() {
                 </Accordion>
               </div>
             )}
+            <Card>
+              <CardHeader className="w-full">
+                <div className="text-xl">
+                  <span className="font-bold">Todays workout:</span>{" "}
+                  {
+                    thisWorkOut.data.programData[
+                      userDoc.currentWorkoutTemplateIndex
+                    ].dayName
+                  }
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col gap-4">
+                  {thisWorkOut.data.programData[
+                    userDoc.currentWorkoutTemplateIndex
+                  ].exercises.map((exercise, index) => {
+                    return (
+                      <Card className="w-full" key={index}>
+                        <CardHeader>
+                          <CardTitle>{exercise.exerciseName}</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          {exercise.sets.map((set, index) => {
+                            return (
+                              <div className="flex gap-2">
+                                <span>set-{index + 1}:</span>
+                                <div className="flex gap-2">
+                                  <h3>Reps:</h3>
+                                  <p>{set.reps}</p>
+                                </div>
+                                <div className="flex gap-2">
+                                  <h3>Weight:</h3>
+                                  <p>{set.weight} kgs</p>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
           </CardContent>
         </Card>
       </div>

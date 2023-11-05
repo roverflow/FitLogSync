@@ -14,6 +14,7 @@ import {
 const getWorkOut = (user) => {
   const [loading, setLoading] = useState(true);
   const [dataExists, setDataExists] = useState(false);
+  const [userDoc, setUserDoc] = useState(null);
   const [allTemplates, setAllTemplates] = useState([]);
   const [currentWorkoutTemplate, setCurrentWorkoutTemplate] = useState(null);
   const [thisWorkOut, setThisWorkOut] = useState(null);
@@ -34,6 +35,7 @@ const getWorkOut = (user) => {
           setLoading(false);
           return;
         }
+        setUserDoc(userDocSnap.data());
         const allUserProgramsSnapshot = await getDocs(
           query(
             collection(db, "workoutTemplates"),
@@ -78,6 +80,7 @@ const getWorkOut = (user) => {
     allTemplates,
     currentWorkoutTemplate,
     thisWorkOut,
+    userDoc,
   };
 };
 
