@@ -50,9 +50,11 @@ const getWorkOut = (user) => {
           return;
         }
         setDataExists(true);
+
         const allUserPrograms = allUserProgramsSnapshot.docs.map((docx) => {
           return { data: docx.data(), id: docx.id };
         });
+
         if (userDocSnap.data().currentWorkoutTemplate) {
           setCurrentWorkoutTemplate(userDocSnap.data().currentWorkoutTemplate);
           const thisworkOutTemplate = allUserPrograms.find(

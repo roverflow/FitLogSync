@@ -1,37 +1,83 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useToast } from "@/components/ui/use-toast";
 import checkAuth from "@/hooks/checkAuth";
 import getWorkOut from "@/hooks/getWorkOut";
 import { Loading, GeneralDisplay } from "@/components/GeneralComponents";
 import Link from "next/link";
 import { secondsToHMS } from "@/lib/utils";
 
+import { useRouter } from "next/navigation";
+
+import { doc, collection, addDoc, updateDoc } from "firebase/firestore";
+import { db } from "@/firebase/firebaseSetup";
+
 export default function Home() {
   const { user } = checkAuth();
+  const { toast } = useToast();
+  const router = useRouter();
   const { thisWorkOut, loading, currentWorkoutTemplate, userDoc } =
     getWorkOut(user);
   const [prevWorkout, setPrevWorkout] = useState(null);
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [workStartTime, setWorkStartTime] = useState(null);
-  const [workEndTime, setWorkEndTime] = useState(null);
 
   const startWorkOut = () => {
     setIsRunning(true);
     setWorkStartTime(Date.now());
   };
 
-  const stopAndSubmit = () => {
+  const stopAndSubmit = async () => {
     setIsRunning(false);
-    setWorkEndTime(Date.now());
+
+    const workoutData = {
+      user: user.uid,
+      timeStarted: workStartTime,
+      timeEnded: Date.now(),
+      timeTakenInSeconds: time,
+      date: new Date().toISOString(),
+      dayIndex: userDoc.currentWorkoutTemplateIndex,
+      workOutTemplate: currentWorkoutTemplate,
+      exercises:
+        thisWorkOut.data.programData[userDoc.currentWorkoutTemplateIndex],
+    };
+
+    const nextWorkOutIndex =
+      thisWorkOut.data.programData.length - 1 ===
+      userDoc.currentWorkoutTemplateIndex
+        ? 0
+        : userDoc.currentWorkoutTemplateIndex + 1;
+
+    try {
+      const resRef = await addDoc(collection(db, "workoutLogs"), workoutData);
+      const userDocRef = doc(db, "users", user.uid);
+      await updateDoc(userDocRef, {
+        currentWorkoutTemplateIndex: nextWorkOutIndex,
+        lastLoggedWorkout: resRef.id,
+      });
+      toast({
+        title: "Success",
+        description: "Workout Done!",
+      });
+      setTime(0);
+      setTimeout(() => {
+        router.push(`/workout-success?time=${time}`);
+      }, 1000);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Unable to submit workout",
+      });
+      console.log(error);
+    }
   };
 
   useEffect(() => {
