@@ -18,6 +18,7 @@ const getWorkOut = (user) => {
   const [allTemplates, setAllTemplates] = useState([]);
   const [currentWorkoutTemplate, setCurrentWorkoutTemplate] = useState(null);
   const [thisWorkOut, setThisWorkOut] = useState(null);
+  const [previousWorkOut, setPreviousWorkOut] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -65,6 +66,19 @@ const getWorkOut = (user) => {
         }
 
         setAllTemplates(allUserPrograms);
+
+        if (userDocSnap.data().lastLoggedWorkout !== "") {
+          const lastWorkoutRef = doc(
+            db,
+            "workoutLogs",
+            userDocSnap.data().lastLoggedWorkout
+          );
+          const lastWorkoutSnap = await getDoc(lastWorkoutRef);
+          if (lastWorkoutSnap.exists()) {
+            setPreviousWorkOut(lastWorkoutSnap.data());
+          }
+        }
+
         setLoading(false);
       } catch (error) {
         console.log(error);
@@ -83,6 +97,7 @@ const getWorkOut = (user) => {
     currentWorkoutTemplate,
     thisWorkOut,
     userDoc,
+    previousWorkOut,
   };
 };
 

@@ -23,9 +23,14 @@ export default function Home() {
   const { user } = checkAuth();
   const { toast } = useToast();
   const router = useRouter();
-  const { thisWorkOut, loading, currentWorkoutTemplate, userDoc } =
-    getWorkOut(user);
-  const [prevWorkout, setPrevWorkout] = useState(null);
+  const {
+    thisWorkOut,
+    loading,
+    currentWorkoutTemplate,
+    userDoc,
+    previousWorkOut,
+  } = getWorkOut(user);
+
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
   const [workStartTime, setWorkStartTime] = useState(null);
@@ -123,17 +128,49 @@ export default function Home() {
             <h1 className="text-2xl py-2 w-full text-center">
               Current program: {thisWorkOut.data.programName}
             </h1>
-            {prevWorkout && (
-              <div>
+            {previousWorkOut && (
+              <div className="mb-4">
                 <Accordion
                   type="single"
                   collapsible
                   className="w-full border-2 px-2 rounded"
                 >
                   <AccordionItem value="item-1">
-                    <AccordionTrigger>Previous workout</AccordionTrigger>
-                    <AccordionContent>
-                      Yes. It adheres to the WAI-ARIA design pattern.
+                    <AccordionTrigger>
+                      Previous workout - {previousWorkOut.exercises.dayName}
+                    </AccordionTrigger>
+                    <AccordionContent className="p-3">
+                      {previousWorkOut.exercises.exercises.map(
+                        (exercise, index) => {
+                          return (
+                            <div
+                              className="w-full flex flex-col gap-3 mb-3"
+                              key={index}
+                            >
+                              <div>
+                                <CardTitle>{exercise.exerciseName}</CardTitle>
+                              </div>
+                              <div className="border-2 px-2 py-1 rounded">
+                                {exercise.sets.map((set, index) => {
+                                  return (
+                                    <div className="flex gap-2">
+                                      <span>set-{index + 1}:</span>
+                                      <div className="flex gap-2">
+                                        <h3>Reps:</h3>
+                                        <p>{set.reps}</p>
+                                      </div>
+                                      <div className="flex gap-2">
+                                        <h3>Weight:</h3>
+                                        <p>{set.weight} kgs</p>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          );
+                        }
+                      )}
                     </AccordionContent>
                   </AccordionItem>
                 </Accordion>
