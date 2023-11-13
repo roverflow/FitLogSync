@@ -49,11 +49,11 @@ const CreateDay = observer(({ dayNum, day, handleDeleteDay }) => {
   };
 
   return (
-    <div className="gap-2">
-      <Card className="p-2 w-full flex flex-col gap-2 border-2 border-blue-500">
+    <div className="gap-4">
+      <Card className="p-4 w-full flex flex-col gap-4 border-2 border-blue-300 rounded-lg shadow-md bg-white">
         <CardTitle>
           <Input
-            className="bg-transparent"
+            className="bg-transparent text-2xl font-extrabold focus:outline-none text-blue-500"
             defaultValue={`Day ${dayNum}`}
             onChange={(e) => {
               day.dayName.set(e.target.value);
@@ -61,30 +61,43 @@ const CreateDay = observer(({ dayNum, day, handleDeleteDay }) => {
           />
         </CardTitle>
         <div>
-          <Label className="px-1 text-gray-600 font-bold text-xl">
-            Exercise details
+          <Label className="text-gray-600 font-bold text-lg">
+            Exercise Details
           </Label>
-          {day.exercises.map((exercise, index) => {
-            return (
-              <CreateExercise
-                exeNum={index + 1}
-                exercise={exercise}
-                handleDeleteExercise={handleDeleteExercise}
-              />
-            );
-          })}
+          {day.exercises.map((exercise, index) => (
+            <CreateExercise
+              key={index}
+              exeNum={index + 1}
+              exercise={exercise}
+              handleDeleteExercise={handleDeleteExercise}
+            />
+          ))}
         </div>
         <div className="flex">
-          <div
-            className="flex p-2 bg-green-500 text-white rounded cursor-pointer"
+          <button
+            className="flex items-center p-3 bg-green-500 text-white rounded-md cursor-pointer hover:bg-green-600 transition duration-300"
             onClick={handleAddExercise}
           >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="h-5 w-5 mr-2"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+              />
+            </svg>
             Add Exercise
-          </div>
+          </button>
         </div>
         {dayNum > 1 && (
           <button
-            className="bg-red-500 hover:bg-red-600 rounded flex items-center justify-center h-full text-white font-bold py-2 mt-5"
+            className="bg-red-500 hover:bg-red-600 rounded-full flex items-center justify-center h-10 text-white font-bold mt-5 transition duration-300"
             onClick={() => handleDeleteDay(dayNum - 1)}
           >
             Delete
@@ -114,77 +127,80 @@ const CreateExercise = observer(
     };
 
     return (
-      <Card className="p-2 border-2 border-slate-500 my-3">
-        <div className="flex w-full flex-col">
-          <Label className="px-1">Exercise {exeNum}</Label>
+      <Card className="p-4 border-2 border-slate-500 my-3">
+        <div className="flex flex-col w-full">
+          <Label className="mb-2 text-lg font-semibold">
+            Exercise {exeNum}
+          </Label>
           <select
             className="p-2 rounded m-1 ring-1 bg-white"
             value={exercise.exerciseName.get()}
             onChange={(e) => exercise.exerciseName.set(e.target.value)}
           >
-            {exerciseList.map((exe) => {
-              return <option value={exe.data.name}>{exe.data.name}</option>;
-            })}
+            {exerciseList.map((exe) => (
+              <option key={exe.data.name} value={exe.data.name}>
+                {exe.data.name}
+              </option>
+            ))}
           </select>
         </div>
-        <div className="p-2">
-          {exercise.sets.get().map((setVal, index) => {
-            return (
-              <>
-                <div className="flex items-center py-1">
-                  <Label className="px-1">Set-{index + 1}:</Label>
-                  <Label className="px-1">Kg:</Label>
-                  <Input
-                    type="number"
-                    onKeyPress={(event) => {
-                      if (!/[0-9]/.test(event.key)) {
-                        event.preventDefault();
-                      }
-                    }}
-                    className="bg-transparent"
-                    defaultValue={setVal.weight}
-                    value={setVal.weight}
-                    onChange={(e) =>
-                      exercise.sets[index].weight.set(Number(e.target.value))
+        <div className="p-4">
+          {exercise.sets.get().map((setVal, index) => (
+            <div
+              key={index}
+              className="flex items-center py-2 border-b border-slate-300"
+            >
+              <Label className="whitespace-nowrap mr-2">Set-{index + 1}:</Label>
+              <div className="flex items-center space-x-2">
+                <Label className="whitespace-nowrap">Kg:</Label>
+                <Input
+                  type="number"
+                  onKeyPress={(event) => {
+                    if (!/[0-9]/.test(event.key)) {
+                      event.preventDefault();
                     }
-                  />
-                  <Label className="px-1">Rep:</Label>
-                  <Input
-                    className="bg-transparent"
-                    onKeyPress={(event) => {
-                      if (!/[0-9]/.test(event.key)) {
-                        event.preventDefault();
-                      }
-                    }}
-                    type="number"
-                    defaultValue={setVal.reps}
-                    value={setVal.reps}
-                    onChange={(e) =>
-                      exercise.sets[index].reps.set(Number(e.target.value))
+                  }}
+                  className="bg-transparent border-b-2 focus:outline-none focus:border-blue-500"
+                  placeholder={setVal.weight}
+                  onChange={(e) =>
+                    exercise.sets[index].weight.set(Number(e.target.value))
+                  }
+                />
+                <Label className="whitespace-nowrap ml-2">Rep:</Label>
+                <Input
+                  className="bg-transparent border-b-2 focus:outline-none focus:border-blue-500"
+                  placeholder={setVal.reps}
+                  onKeyPress={(event) => {
+                    if (!/[0-9]/.test(event.key)) {
+                      event.preventDefault();
                     }
-                  />
-                  {index !== 0 && (
-                    <button
-                      className="px-2 ml-1 bg-red-500 rounded text-white"
-                      onClick={() => handleDeleteSet(index)}
-                    >
-                      x
-                    </button>
-                  )}
-                </div>
-              </>
-            );
-          })}
+                  }}
+                  type="number"
+                  onChange={(e) =>
+                    exercise.sets[index].reps.set(Number(e.target.value))
+                  }
+                />
+                {index !== 0 && (
+                  <button
+                    className="px-2 ml-2 bg-red-500 rounded text-white"
+                    onClick={() => handleDeleteSet(index)}
+                  >
+                    x
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
 
-          <div className="mt-2 flex gap-1">
+          <div className="mt-4 flex gap-4">
             <button
-              className="p-2 bg-slate-100 rounded hover:bg-slate-200 ring-1 ring-slate-300"
+              className="p-2 bg-slate-100 rounded hover:bg-slate-200 text-slate-800 focus:outline-none"
               onClick={handleAddSet}
             >
-              Add set
+              Add Set
             </button>
             <button
-              className="p-2 bg-red-500 rounded text-white"
+              className="p-2 bg-red-500 rounded text-white focus:outline-none"
               onClick={() => handleDeleteExercise(exeNum - 1)}
             >
               Delete Exercise

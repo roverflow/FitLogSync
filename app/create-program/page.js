@@ -145,6 +145,14 @@ const CreateProgram = observer(() => {
         title: "Success",
         description: "Program created successfully!",
       });
+      programData.set([
+        {
+          id: uuidv4(),
+          dayName: `Day 1`,
+          exercises: [],
+        },
+      ]);
+      setProgramName("");
     } catch (error) {
       toast({
         variant: "destructive",
@@ -170,6 +178,7 @@ const CreateProgram = observer(() => {
                   <Label htmlFor="programName">Program Name</Label>
                   <Input
                     id="programName"
+                    value={programName}
                     onChange={(e) => setProgramName(e.target.value)}
                     placeholder="Enter program name"
                   />
