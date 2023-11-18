@@ -3,9 +3,28 @@ import { Input } from "@/components/ui/input";
 import { CardTitle, Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 
+import { useState } from "react";
+
 import { observer } from "@legendapp/state/react";
 
 import { exerciseList } from "@/constants/exerciseList";
+
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
+
+import { Button } from "@/components/ui/button";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+} from "@/components/ui/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const CreateDay = observer(({ dayNum, day, handleDeleteDay }) => {
   const { toast } = useToast();
@@ -23,7 +42,7 @@ const CreateDay = observer(({ dayNum, day, handleDeleteDay }) => {
       day.exercises.set((prev) => [
         ...prev,
         {
-          exerciseName: "Sqauts",
+          exerciseName: "",
           sets: [
             {
               weight: 10,
@@ -110,6 +129,7 @@ const CreateDay = observer(({ dayNum, day, handleDeleteDay }) => {
 
 const CreateExercise = observer(
   ({ exeNum, exercise, handleDeleteExercise }) => {
+    const [open, setOpen] = useState(false);
     const handleAddSet = () => {
       exercise.sets.set((prev) => [
         ...prev,
@@ -129,10 +149,57 @@ const CreateExercise = observer(
     return (
       <Card className="p-4 border-2 border-slate-500 my-3">
         <div className="flex flex-col w-full">
-          <Label className="mb-2 text-lg font-semibold">
-            Exercise {exeNum}
-          </Label>
-          <select
+          <Label className="mb-2 text-lg font-semibold">Exercise</Label>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                role="combobox"
+                aria-expanded={open}
+                className=" justify-between"
+              >
+                {exercise.exerciseName.get()
+                  ? exercise.exerciseName.get()
+                  : `Select Exercise ${exeNum}`}
+                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="p-0">
+              <Command>
+                <CommandInput placeholder="Search exercise..." />
+                <CommandEmpty>No Exercise found.</CommandEmpty>
+                <CommandGroup className="h-64 overflow-y-scroll border p-4">
+                  {exerciseList.map((framework) => (
+                    <CommandItem
+                      key={framework.data.name}
+                      value={framework.data.name}
+                      onSelect={(currentValue) => {
+                        exercise.exerciseName.set(
+                          currentValue === exercise.exerciseName.get()
+                            ? ""
+                            : currentValue
+                        );
+                        setOpen(false);
+                      }}
+                    >
+                      <Check
+                        className={cn(
+                          "mr-2 h-4 w-4",
+                          exercise.exerciseName.get().toLowerCase() ===
+                            framework.data.name.toLowerCase()
+                            ? "opacity-100"
+                            : "opacity-0"
+                        )}
+                      />
+                      {framework.data.name}
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </Command>
+            </PopoverContent>
+          </Popover>
+
+          {/* <select
             className="p-2 rounded m-1 ring-1 bg-white"
             value={exercise.exerciseName.get()}
             onChange={(e) => exercise.exerciseName.set(e.target.value)}
@@ -142,7 +209,7 @@ const CreateExercise = observer(
                 {exe.data.name}
               </option>
             ))}
-          </select>
+          </select> */}
         </div>
         <div className="p-4">
           {exercise.sets.get().map((setVal, index) => (

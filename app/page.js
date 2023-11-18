@@ -7,6 +7,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import checkAuth from "@/hooks/checkAuth";
 import getWorkOut from "@/hooks/getWorkOut";
@@ -42,6 +43,11 @@ export default function Home() {
 
   const stopAndSubmit = async () => {
     setIsRunning(false);
+
+    if (time < 10) {
+      alert("Workout time too short");
+      return;
+    }
 
     const workoutData = {
       user: user.uid,
@@ -104,11 +110,13 @@ export default function Home() {
   if (thisWorkOut === null || currentWorkoutTemplate === null) {
     return (
       <GeneralDisplay>
-        <div className="w-full flex flex-col gap-4">
-          <span>No workout program found</span>
+        <div className="w-full flex flex-col items-center gap-6">
+          <span className="text-2xl font-semibold text-gray-800">
+            No workout program found
+          </span>
           <Link
-            href={`/create-program`}
-            className="p-2 rounded bg-blue-500 text-white font-bold text-center"
+            href="/create-program"
+            className="px-6 py-3 rounded-full bg-blue-500 text-white font-bold text-center hover:bg-blue-600 transition duration-300 shadow-md"
           >
             Create a program
           </Link>
@@ -193,19 +201,19 @@ export default function Home() {
                     {secondsToHMS(time)}
                   </div>
                   {!isRunning ? (
-                    <button
-                      className={`bg-green-500 text-white font-bold p-2 rounded`}
+                    <Button
+                      className={`bg-green-500 hover:bg-green-600 text-white`}
                       onClick={startWorkOut}
                     >
                       Start workout
-                    </button>
+                    </Button>
                   ) : (
-                    <button
-                      className={`bg-red-500 text-white font-bold p-2 rounded`}
+                    <Button
+                      className={`bg-red-500 hover:bg-red-600 text-white`}
                       onClick={stopAndSubmit}
                     >
                       Stop workout
-                    </button>
+                    </Button>
                   )}
                 </div>
                 <div className="flex flex-col gap-4">
